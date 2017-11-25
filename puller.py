@@ -1,7 +1,8 @@
-import requests,pandas as pd
+import requests, os, pandas as pd
 from io import StringIO
 from multiprocessing import Pool
 
+DAYS = input('Enter no. of days to pull:') #google doesnt give more than 15 days of data
 EXCHANGE = NSE
 INTERVAL = 61  # 61 for 1 minute(60+1) , 601 for 10 minutes(600+1) , 301 for 5 minutes etc(300+1), 
                # 1 is added to get the timestamp data for parsing
@@ -26,6 +27,10 @@ stocks = ['ABB', 'ACC', 'ACCELYA', 'ACE', 'ADANIENT', 'ADANIPORTS', 'ADANIPOWER'
      'UBL', 'ULTRACEMCO', 'UNIONBANK', 'UNITECH', 'UPL', 'VAKRANGEE', 'VEDL', 'VIDEOIND', 
      'WABCOINDIA', 'WALCHANNAG', 'WIPRO', 'WOCKPHARMA', 'YESBANK', 'ZEEL']
 
+for stock in stocks:
+  if not os.path.isdir('/home/LTP/'+stock):
+    os.mkdir('/home/LTP/'+stock)
+
 def puller(stock, EXCHANGE, INTERVAL, DAYS, count):
     p = requests.get('http://finance.google.com/finance/getprices?q='+stock+'&x='+EXCHANGE+'&i='+INTERVAL+'&p='+DAYS+'d&f=d,c,h,l,o,v').text
     a = pd.read_csv(StringIO(p), skiprows=range(7), names =['date', 'Close', 'High', 'Low', 'Open', 'Volume'])
@@ -34,11 +39,10 @@ def puller(stock, EXCHANGE, INTERVAL, DAYS, count):
     a['Time'] = pd.to_datetime(a.date.str[1:],unit='s').dt.tz_localize('UTC').dt.tz_convert('Asia/Kolkata').dt.strftime('%H%M%S')
 
     a = a[['Date','Time','Open','High','Low','Close','Volume']]
-    a.to_csv('/home/LTP/'+i+'/test.csv', mode='a', header=False, index=False)
+    a.to_csv('/home/LTP/'+stock+'/one_minute_data.csv', mode='a', header=False, index=False)
     print(count, i)
      
 if __name__ == '__main__':
-        DAYS = input('Enter no of days to pull:') #google doesnt give more than 15 days of data
         pool = Pool(processes = 10)
         for stock in stocks:
             count+=1
