@@ -6,6 +6,7 @@ DAYS = input('Enter no. of days to pull:') #google doesnt give more than 15 days
 EXCHANGE = 'NSE'
 INTERVAL = '61'  # 61 for 1 minute(60+1) , 601 for 10 minutes(600+1) , 301 for 5 minutes etc(300+1), 
                  # 1 is added to get the timestamp data for parsing
+DOWNLOAD_PATH = '/home/LTP'
 count = 0
 
 # given below are some sample stocks symbols from NSE 
@@ -28,8 +29,8 @@ stocks = ['ABB', 'ACC', 'ACCELYA', 'ACE', 'ADANIENT', 'ADANIPORTS', 'ADANIPOWER'
      'WABCOINDIA', 'WALCHANNAG', 'WIPRO', 'WOCKPHARMA', 'YESBANK', 'ZEEL']
 
 for stock in stocks:
-  if not os.path.isfile('/home/LTP/'+stock+'.csv'):
-    stockfile = open('/home/LTP/'+stock+'.csv','w')
+  if not os.path.isfile(DOWNLOAD_PATH+stock+'.csv'):
+    stockfile = open(DOWNLOAD_PATH+stock+'.csv','w')
     stockfile.write('Date,Time,Open,High,Low,Close,Volume\n')
     stockfile.close()
 
@@ -41,7 +42,7 @@ def puller(stock, EXCHANGE, INTERVAL, DAYS, count):
     a['Time'] = pd.to_datetime(a.date.str[1:],unit='s').dt.tz_localize('UTC').dt.tz_convert('Asia/Kolkata').dt.strftime('%H%M%S')
 
     a = a[['Date','Time','Open','High','Low','Close','Volume']]
-    a.to_csv('/home/LTP/'+stock+'.csv', mode='a', header=False, index=False)
+    a.to_csv(DOWNLOAD_PATH+stock+'.csv', mode='a', header=False, index=False)
     print(count, stock)
      
 if __name__ == '__main__':
