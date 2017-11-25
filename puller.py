@@ -42,7 +42,7 @@ def puller(stock, EXCHANGE, INTERVAL, DAYS, count):
 
     a = a[['Date','Time','Open','High','Low','Close','Volume']]
     a.to_csv('/home/LTP/'+stock+'.csv', mode='a', header=False, index=False)
-    print(count, i)
+    print(count, stock)
      
 if __name__ == '__main__':
         pool = Pool(processes = 10)
