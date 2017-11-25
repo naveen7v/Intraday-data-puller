@@ -6,7 +6,7 @@ DAYS = input('Enter no. of days to pull:') #google doesnt give more than 15 days
 EXCHANGE = 'NSE'
 INTERVAL = '61'  # 61 for 1 minute(60+1) , 601 for 10 minutes(600+1) , 301 for 5 minutes etc(300+1), 
                  # 1 is added to get the timestamp data for parsing
-DOWNLOAD_PATH = '/home/LTP'
+DOWNLOAD_PATH = '/home/LTP/'
 count = 0
 
 # given below are some sample stocks symbols from NSE 
