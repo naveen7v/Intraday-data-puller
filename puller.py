@@ -22,10 +22,10 @@ stocks = ['ABB', 'ACC', 'ACCELYA', 'ACE', 'ADANIENT', 'ADANIPORTS', 'ADANIPOWER'
      'L%26TFH', 'LICHSGFIN', 'LT', 'LTI', 'M%26M', 'M%26MFIN', 'MARICO', 'MARUTI',
      'NATIONALUM', 'NBCC', 'NCC', 'NELCAST', 'NHPC', 'NIFTY', 'NIITTECH', 'NMDC',
      'PETRONET', 'PFC', 'PHOENIXLL', 'PIDILITIND', 'PIIND', 
-     'RADICO', 'RAJESHEXPO', 'RAYMOND', 'RELIANCE', 'RELINFRA', 'RENUKA', 'RPOWER',
-     'SADBHAV', 'SAIL', 'SBIN', 'SCI', 'SETCO', 'SNOWMAN', 'SOBHA', 'SOUTHBANK', 'SYNDIBANK',
-     'TALWALKARS', 'TATACHEM', 'TATACOMM', 'TATAELXSI', 'TATAGLOBAL', 'TATAMOTORS',  'TATAPOWER',
-     'UBL', 'ULTRACEMCO', 'UNIONBANK', 'UNITECH', 'UPL', 'VAKRANGEE', 'VEDL', 'VIDEOIND', 
+     'RAYMOND', 'RELIANCE', 'RELINFRA', 'RENUKA', 'RPOWER',
+     'SADBHAV', 'SAIL', 'SBIN', 'SCI', 'SETCO', 'SNOWMAN', 
+     'TALWALKARS', 'TATACHEM', 'TATACOMM', 'TATAELXSI', 'TATAMOTORS',  'TATAPOWER',
+     'UBL', 'ULTRACEMCO', 'UNIONBANK', 'UNITECH', 'UPL', 'VAKRANGEE', 
      'WABCOINDIA', 'WALCHANNAG', 'WIPRO', 'WOCKPHARMA', 'YESBANK', 'ZEEL']
 
 for stock in stocks:
@@ -34,7 +34,7 @@ for stock in stocks:
     stockfile.write('Date,Time,Open,High,Low,Close,Volume\n')
     stockfile.close()
 
-def puller(stock, EXCHANGE, INTERVAL, DAYS, count):
+def puller(stock, count):
     p = requests.get('http://finance.google.com/finance/getprices?q='+stock+'&x='+EXCHANGE+'&i='+INTERVAL+'&p='+DAYS+'d&f=d,c,h,l,o,v').text
     a = pd.read_csv(StringIO(p), skiprows=range(7), names =['date', 'Close', 'High', 'Low', 'Open', 'Volume'])
     
@@ -49,5 +49,5 @@ if __name__ == '__main__':
         pool = Pool(processes = 10)
         for stock in stocks:
             count+=1
-            pool.apply_async(func=puller, args=( stock, EXCHANGE, INTERVAL, DAYS, count))
+            pool.apply_async(func=puller, args=(stock, count))
             
