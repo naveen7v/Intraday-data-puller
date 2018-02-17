@@ -2,9 +2,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 intraday = pd.read_csv('path/to/intraday_file.csv')
-eod = pd.read_csv('path/to/eod_file.csv')
+eod = pd.read_csv('path/to/eod_file.csv') #eod file for the same stock
 
-inp=int(input('Date to plot:'))
+inp = int(input('Date to plot:'))
 
 tmp = intraday['Close'].groupby(intraday['Date'])
 intraday['mma20'] = tmp.rolling(window=20).mean().reset_index(0,drop=True)
