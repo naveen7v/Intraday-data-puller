@@ -1,8 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-intraday = pd.read_csv('/home/nav/bhavcopy/Intraday_data/ZEEL.csv')
-eod = pd.read_csv('/home/nav/bhavcopy/Intraday_data/ZEEL_eod.csv')
+intraday = pd.read_csv('path/to/intraday_file.csv')
+eod = pd.read_csv('path/to/eod_file.csv')
 
 inp = input('Date to plot:')
 
@@ -28,10 +28,10 @@ eod['S1'] = eod['S1'].shift(1)
 eod['Pivot'] = eod['Pivot'].shift(1)
 
 eod = eod.set_index('Date')
-tmp1=intraday[['Close','mma20','mma30','mma40']].groupby(intraday['Date'])
+tmp1 = intraday[['Close','mma20','mma30','mma40']].groupby(intraday['Date'])
 
 tmp1=list(tmp1)
-for i in tmp1[1:]:
+for i in tmp1[1:]: #leaving the first one out ,cause no pivot,res,sup
     if str(i[0]) == inp:
         f = eod.loc[i[0]]
         ax = i[1].plot(figsize = (11,10) ,grid = True)
@@ -41,6 +41,3 @@ for i in tmp1[1:]:
         fig = ax.get_figure()
         fig.savefig('/home/'+str(i[0])+'.png', bbox_inches='tight', pad_inches=0)
         plt.close(fig)
-    else:
-        print(inp,'not in the file')
-        break
