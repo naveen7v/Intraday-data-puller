@@ -28,7 +28,7 @@ eod['S1'] = eod['S1'].shift(1)
 eod['Pivot'] = eod['Pivot'].shift(1)
 
 eod = eod.set_index('Date')
-tmp1 = intraday[['Close','mma20','mma30','mma40']].groupby(intraday['Date'])
+tmp1 = intraday[['Close','mma20','mma30']].groupby(intraday['Date'])
 
 tmp1=list(tmp1)
 for i in tmp1[1:]: #leaving the first one out ,cause no pivot,res,sup
