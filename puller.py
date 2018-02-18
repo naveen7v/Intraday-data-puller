@@ -18,8 +18,7 @@ stocks = ['ABB', 'ACC', 'ACCELYA', 'ACE', 'ADANIENT', 'ADANIPORTS', 'ADANIPOWER'
      'BANKNIFTY', 'BATAINDIA', 'BEL', 'BEML', 'BERGEPAINT', 'BHARATFIN', 'BHARATFORG', 'BHEL',
      'CADILAHC','CANBK', 'CARBORUNIV', 'CASTROLIND', 'CCL', 'CEATLTD', 'CENTRALBK',
      'CENTURYPLY', 'CENTURYTEX', 'CESC', 'CIPLA', 'CNXIT', 'COALINDIA', 'COLPAL', 'CONCOR', 
-     'L%26TFH', 'LICHSGFIN', 'LT', 'LTI', 'M%26M', 'M%26MFIN', 'MARICO', 'MARUTI',
-     'NATIONALUM', 'NBCC', 'NCC', 'NELCAST', 'NHPC', 'NIFTY', 'NIITTECH', 'NMDC',
+     'L%26TFH', 'LICHSGFIN', 'LT', 'LTI', 'M%26M', 'NHPC', 'NIFTY', 'NIITTECH', 'NMDC',
      'PETRONET', 'PFC', 'PHOENIXLL', 'PIDILITIND', 'PIIND', 
      'RAYMOND', 'RELIANCE', 'RELINFRA', 'RENUKA', 'RPOWER',
      'SADBHAV', 'SAIL', 'SBIN', 'SCI', 'SETCO', 'SNOWMAN', 
@@ -40,15 +39,18 @@ def puller(STOCK, NO_OF_DAYS, EXCHANGE, INTERVAL, WRITE_TO_FILE=True):
     p = requests.get('http://finance.google.com/finance/getprices?q='+STOCK+'&x='+EXCHANGE+'&i='+INTERVAL+'&p='+NO_OF_DAYS+'d&f=d,c,h,l,o,v').text
     a = pd.read_csv(StringIO(p), skiprows=range(7), names =['date', 'Close', 'High', 'Low', 'Open', 'Volume'])
     
-    a['Date'] = pd.to_datetime(a.date.str[1:],unit='s').dt.tz_localize('UTC').dt.tz_convert('Asia/Kolkata').dt.strftime('%Y%m%d')
-    a['Time'] = pd.to_datetime(a.date.str[1:],unit='s').dt.tz_localize('UTC').dt.tz_convert('Asia/Kolkata').dt.strftime('%H%M%S')
-
-    a = a[['Date','Time','Open','High','Low','Close','Volume']]
-    
     if WRITE_TO_FILE:
+      a['Date'] = pd.to_datetime(a.date.str[1:],unit='s').dt.tz_localize('UTC').dt.tz_convert('Asia/Kolkata').dt.strftime('%Y%m%d')
+      a['Time'] = pd.to_datetime(a.date.str[1:],unit='s').dt.tz_localize('UTC').dt.tz_convert('Asia/Kolkata').dt.strftime('%H%M%S')
+
+      a = a[['Date','Time','Open','High','Low','Close','Volume']]
       a.to_csv(DOWNLOAD_PATH+stock+'.csv', mode='a', header=False, index=False)
       print(STOCK)
     else:
+      a['date']=pd.to_datetime(a.date.str[1:],unit='s').dt.tz_localize('UTC').dt.tz_convert('Asia/Kolkata')
+      a['Date']=a.date.dt.date
+      a['Time']=a.date.dt.time
+      a=a[['Date','Time','Open','High','Low','Close','Volume']]
       return a
      
 if __name__ == '__main__':
