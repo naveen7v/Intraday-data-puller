@@ -33,7 +33,10 @@ for stock in stocks:
     stockfile.write('Date,Time,Open,High,Low,Close,Volume\n')
     stockfile.close()
 
-def puller(STOCK, NO_OF_DAYS,WRITE_TO_FILE=True):
+def puller(STOCK, NO_OF_DAYS, EXCHANGE, INTERVAL, WRITE_TO_FILE=True):
+    NO_OF_DAYS = str(NO_OF_DAYS)  # IN CASE ,YOU WANT TO USE THIS FUNCTION IN A ANOTHER SCRIPT
+    EXCHANGE = str(EXCHANGE)
+    INTERVAL = str(INTERVAL)
     p = requests.get('http://finance.google.com/finance/getprices?q='+STOCK+'&x='+EXCHANGE+'&i='+INTERVAL+'&p='+NO_OF_DAYS+'d&f=d,c,h,l,o,v').text
     a = pd.read_csv(StringIO(p), skiprows=range(7), names =['date', 'Close', 'High', 'Low', 'Open', 'Volume'])
     
