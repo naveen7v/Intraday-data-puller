@@ -2,12 +2,11 @@ import requests, os, pandas as pd
 from io import StringIO
 from multiprocessing import Pool
 
-DAYS = input('Enter no. of days to pull:') #google doesnt give more than 15 days of data
+NO_OF_DAYS = input('Enter no. of days to pull:') #google doesnt give more than 15 days of data
 EXCHANGE = 'NSE'
 INTERVAL = '61'  # 61 for 1 minute(60+1) , 601 for 10 minutes(600+1) , 301 for 5 minutes etc(300+1), 
                  # 1 is added to get the timestamp data for parsing
 DOWNLOAD_PATH = '/home/LTP/'
-count = 0
 
 # given below are some sample stocks symbols from NSE 
 # if you want to add your own stocks just add their symbol in the list below
@@ -34,20 +33,23 @@ for stock in stocks:
     stockfile.write('Date,Time,Open,High,Low,Close,Volume\n')
     stockfile.close()
 
-def puller(stock, count):
-    p = requests.get('http://finance.google.com/finance/getprices?q='+stock+'&x='+EXCHANGE+'&i='+INTERVAL+'&p='+DAYS+'d&f=d,c,h,l,o,v').text
+def puller(STOCK, NO_OF_DAYS,WRITE_TO_FILE=True):
+    p = requests.get('http://finance.google.com/finance/getprices?q='+STOCK+'&x='+EXCHANGE+'&i='+INTERVAL+'&p='+NO_OF_DAYS+'d&f=d,c,h,l,o,v').text
     a = pd.read_csv(StringIO(p), skiprows=range(7), names =['date', 'Close', 'High', 'Low', 'Open', 'Volume'])
     
     a['Date'] = pd.to_datetime(a.date.str[1:],unit='s').dt.tz_localize('UTC').dt.tz_convert('Asia/Kolkata').dt.strftime('%Y%m%d')
     a['Time'] = pd.to_datetime(a.date.str[1:],unit='s').dt.tz_localize('UTC').dt.tz_convert('Asia/Kolkata').dt.strftime('%H%M%S')
 
     a = a[['Date','Time','Open','High','Low','Close','Volume']]
-    a.to_csv(DOWNLOAD_PATH+stock+'.csv', mode='a', header=False, index=False)
-    print(count, stock)
+    
+    if WRITE_TO_FILE:
+      a.to_csv(DOWNLOAD_PATH+stock+'.csv', mode='a', header=False, index=False)
+      print(STOCK)
+    else:
+      return a
      
 if __name__ == '__main__':
         pool = Pool(processes = 10)
-        for stock in stocks:
-            count+=1
-            pool.apply_async(func=puller, args=(stock, count))
+        for STOCK in stocks:
+            pool.apply_async(func=puller, args=(STOCK, NO_OF_DAYS, EXCHANGE, INTERVAL))
             
