@@ -39,22 +39,18 @@ def puller(STOCK, NO_OF_DAYS, EXCHANGE, INTERVAL, WRITE_TO_FILE=True):
     p = requests.get('http://finance.google.com/finance/getprices?q='+STOCK+'&x='+EXCHANGE+'&i='+INTERVAL+'&p='+NO_OF_DAYS+'d&f=d,c,h,l,o,v').text
     a = pd.read_csv(StringIO(p), skiprows=range(7), names =['date', 'Close', 'High', 'Low', 'Open', 'Volume'])
     
-    if WRITE_TO_FILE:
-      a['Date'] = pd.to_datetime(a.date.str[1:],unit='s').dt.tz_localize('UTC').dt.tz_convert('Asia/Kolkata').dt.strftime('%Y%m%d')
-      a['Time'] = pd.to_datetime(a.date.str[1:],unit='s').dt.tz_localize('UTC').dt.tz_convert('Asia/Kolkata').dt.strftime('%H%M%S')
+    a['date']=pd.to_datetime(a.date.str[1:],unit='s').dt.tz_localize('UTC').dt.tz_convert('Asia/Kolkata')
+    a['Date']=a.date.dt.date
+    a['Time']=a.date.dt.time
+    a=a[['Date', 'Time', 'Open', 'High', 'Low', 'Close', 'Volume']]
 
-      a = a[['Date','Time','Open','High','Low','Close','Volume']]
+    if WRITE_TO_FILE:
       a.to_csv(DOWNLOAD_PATH+stock+'.csv', mode='a', header=False, index=False)
       print(STOCK)
     else:
-      a['date']=pd.to_datetime(a.date.str[1:],unit='s').dt.tz_localize('UTC').dt.tz_convert('Asia/Kolkata')
-      a['Date']=a.date.dt.date
-      a['Time']=a.date.dt.time
-      a=a[['Date','Time','Open','High','Low','Close','Volume']]
       return a
      
 if __name__ == '__main__':
         pool = Pool(processes = 10)
         for STOCK in stocks:
             pool.apply_async(func=puller, args=(STOCK, NO_OF_DAYS, EXCHANGE, INTERVAL))
-            
