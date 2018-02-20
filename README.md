@@ -9,3 +9,7 @@ This code pulls 1-minute snapshot data for NSE-CASH stocks and saves them in the
 This code plots intraday graph along with the Pivot,R1 and S1 levels for that day.
 
 To calculate Pivot,R1,S1 etc you need the EOD data for that stock 
+
+**liveplot_dash.py**
+
+This plots the live graph using Dash/Plotly package.
