@@ -31,7 +31,7 @@ app.layout = html.Div([
         events=[Event('interval_', 'interval')]
         )
 def update_graph(in_data, period):
-    df = puller(stock=in_data, no_of_days=1, Interval=period, write_to_file = False)
+    df = puller(STOCK=in_data, NO_OF_DAYS=1, EXCHANGE='NSE', INTERVAL=period, WRITE_TO_FILE = False)
     df['MMA20'] = df.Close.rolling(window=20).mean()
     df['MMA30'] = df.Close.rolling(window=30).mean()
     traces = []
