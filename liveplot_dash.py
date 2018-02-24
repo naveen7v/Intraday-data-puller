@@ -32,8 +32,8 @@ app.layout = html.Div([
         )
 def update_graph(in_data, period):
     df = puller(STOCK=in_data, NO_OF_DAYS=1, EXCHANGE='NSE', INTERVAL=period, WRITE_TO_FILE = False)
-    df['MMA20'] = df.Close.rolling(window=20).mean()
-    df['MMA30'] = df.Close.rolling(window=30).mean()
+    df['20MMA'] = df.Close.rolling(window=20).mean()
+    df['30MMA'] = df.Close.rolling(window=30).mean()
     traces = []
     traces.append(plotly.graph_objs.Scatter(
             x = df.Time,
@@ -42,13 +42,13 @@ def update_graph(in_data, period):
             mode = 'lines'))
     traces.append(plotly.graph_objs.Scatter(
             x = df.Time,
-            y = df.MMA20,
-            name = 'MMA20',
+            y = df.20MMA,
+            name = '20MMA',
             mode = 'lines'))
     traces.append(plotly.graph_objs.Scatter(
             x = df.Time,
-            y = df.MMA30,
-            name = 'MMA30',
+            y = df.30MMA,
+            name = '30MMA',
             mode = 'lines'))
             
     if period == '61':
