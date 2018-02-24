@@ -19,13 +19,14 @@ app.layout = html.Div([
                         {'label': '5', 'value': '301'},
                         {'label': '15', 'value': '901'}],value='61')
                 ],style = {'display':'inline-block'}),
-        dcc.Graph(id='livegraph'),
+        dcc.Graph(id='livegraph_with_sma'),
+        dcc.Graph(id='livegraph_with_bands'),
         dcc.Interval(id='interval_',interval=60000)
 ])
 
 
 @app.callback(
-        Output('livegraph', 'figure'),
+        Output('livegraph_with_sma', 'figure'),
         [Input(component_id='input', component_property = 'value'),
          Input(component_id='peri', component_property = 'value')],
         events=[Event('interval_', 'interval')]
@@ -57,6 +58,33 @@ def update_graph(in_data, period):
         layout = plotly.graph_objs.Layout(title='5 Minute plot of '+in_data)
     else:
         layout = plotly.graph_objs.Layout(title='15 Minute plot of '+in_data)
+    return {'data': traces,'layout':layout}
+
+@app.callback(Output('livegraph_with_bands', 'figure'),
+        [Input(component_id='input', component_property = 'value'),
+         Input(component_id='peri', component_property = 'value')],
+        events=[Event('interval_', 'interval')]
+        )
+def update_graph_scatter(in_data,period):
+    df = puller(stock=in_data, no_of_days=1, Interval=period, write_to_file=False)
+    df['MMA20']=df.Close.rolling(window=20).mean()
+    df['UpperBand']=df.MMA20+(df.Close.rolling(window=20).std()*2)
+    df['LowerBand']=df.MMA20-(df.Close.rolling(window=20).std()*2)
+    traces = []
+    
+    traces.append(plotly.graph_objs.Scatter(
+            x=df.Time,y=df.Close,
+            name='Close',
+            mode= 'lines'))
+    traces.append(plotly.graph_objs.Scatter(
+            x=df.Time,y=df.UpperBand,
+            name='UB',
+            mode= 'lines'))
+    traces.append(plotly.graph_objs.Scatter(
+            x=df.Time,y=df.LowerBand,
+            name='LB',
+            mode= 'lines'))
+    layout = plotly.graph_objs.Layout(title='Bollinger Band for '+in_data)
     return {'data': traces,'layout':layout}
 
 if __name__ == '__main__':
