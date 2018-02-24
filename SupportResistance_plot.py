@@ -7,8 +7,8 @@ eod = pd.read_csv('path/to/eod_file.csv') #eod file for the same stock
 inp = int(input('Date to plot:'))
 
 tmp = intraday['Close'].groupby(intraday['Date'])
-intraday['mma20'] = tmp.rolling(window=20).mean().reset_index(0,drop=True)
-intraday['mma30'] = tmp.rolling(window=30).mean().reset_index(0,drop=True)
+intraday['20mma'] = tmp.rolling(window=20).mean().reset_index(0,drop=True)
+intraday['30mma'] = tmp.rolling(window=30).mean().reset_index(0,drop=True)
 
 eod['Pivot'] = (eod['High'] + eod['Low'] + eod['Close'])/3
 eod['R2'] = eod['Pivot'] + (eod['High'] - eod['Low'])
@@ -28,7 +28,7 @@ eod['S1'] = eod['S1'].shift(1)
 eod['Pivot'] = eod['Pivot'].shift(1)
 
 eod = eod.set_index('Date')
-tmp1 = intraday[['Close','mma20','mma30']].groupby(intraday['Date'])
+tmp1 = intraday[['Close','20mma','30mma']].groupby(intraday['Date'])
 
 try:
     x=tmp1.get_group(inp)
