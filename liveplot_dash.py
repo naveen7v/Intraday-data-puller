@@ -19,16 +19,17 @@ app.layout = html.Div([
                         {'label': '5', 'value': '301'},
                         {'label': '15', 'value': '901'}],value='61')
                 ],style = {'display':'inline-block'}),
-        dcc.Graph(id='livegraph_with_sma'),
-        dcc.Graph(id='livegraph_with_bands'),
-        dcc.Interval(id='interval_',interval=60000)
+        dcc.Graph(id = 'livegraph_with_sma'),
+        dcc.Graph(id = 'vol'),
+        dcc.Graph(id = 'livegraph_with_bands'),
+        dcc.Interval(id = 'interval_', interval = 60000)
 ])
 
 
 @app.callback(
         Output('livegraph_with_sma', 'figure'),
-        [Input(component_id='input', component_property = 'value'),
-         Input(component_id='peri', component_property = 'value')],
+        [Input(component_id = 'input', component_property = 'value'),
+         Input(component_id = 'peri', component_property = 'value')],
         events=[Event('interval_', 'interval')]
         )
 def update_graph(in_data, period):
@@ -57,18 +58,33 @@ def update_graph(in_data, period):
     elif period == '301':
         layout = plotly.graph_objs.Layout(title='5 Minute plot of '+in_data)
     else:
-        layout = plotly.graph_objs.Layout(title='15 Minute plot of '+in_data)
-        
+        layout = plotly.graph_objs.Layout(title='15 Minute plot of '+in_data)     
+    return {'data': traces,'layout':layout}
+
+
+@app.callback(
+        Output('vol', 'figure'),
+        [Input(component_id = 'stock_input', component_property = 'value'),
+         Input(component_id = 'peri', component_property = 'value')],
+        events=[Event('interval_', 'interval')]
+        )
+def update_graph_vol(in_data,period):
+    df = puller(STOCK=in_data, NO_OF_DAYS=1, EXCHANGE='NSE', INTERVAL=period, WRITE_TO_FILE = False)
+    traces = []
+    
+    traces.append(plotly.graph_objs.Bar(
+            x = df.Time, y = df.Volume, name='Volume'))
+    layout = plotly.graph_objs.Layout(title = 'Volume data for '+in_data)
     return {'data': traces,'layout':layout}
 
 
 @app.callback(Output('livegraph_with_bands', 'figure'),
-        [Input(component_id='input', component_property = 'value'),
-         Input(component_id='peri', component_property = 'value')],
+        [Input(component_id = 'input', component_property = 'value'),
+         Input(component_id = 'peri', component_property = 'value')],
         events=[Event('interval_', 'interval')]
         )
 def update_graph_bands(in_data,period):
-    df = puller(stock=in_data, no_of_days=1, Interval=period, write_to_file=False)
+    df = puller(STOCK=in_data, NO_OF_DAYS=1, EXCHANGE='NSE', INTERVAL=period, WRITE_TO_FILE = False)
     df['MMA20']=df.Close.rolling(window=20).mean()
     df['UpperBand']=df.MMA20 + (df.Close.rolling(window=20).std()*2)
     df['LowerBand']=df.MMA20 - (df.Close.rolling(window=20).std()*2)
@@ -92,7 +108,7 @@ def update_graph_bands(in_data,period):
             name = 'LB',
             mode= 'lines'))
 
-    layout = plotly.graph_objs.Layout(title='Bollinger Band for '+in_data)
+    layout = plotly.graph_objs.Layout(title = 'Bollinger Band for '+in_data)
         
     return {'data': traces,'layout':layout}
 
