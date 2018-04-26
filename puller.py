@@ -46,7 +46,7 @@ def puller(stock, no_of_days, interval, write_to_file = True):
         a['Time'] = pd.to_datetime(a.date.str[1:],unit='s').dt.tz_localize('UTC').dt.tz_convert('Asia/Kolkata').dt.strftime('%H%M%S')
     
         a=a[['Date','Time','Open','High','Low','Close','Volume']]
-        a.to_csv('/home/nav/bhavcopy/Intraday_data/2018/'+stock+'/'+stock+'.csv', mode='a', header=False,index=False)
+        a.to_csv(DOWNLOAD_PATH+stock+'.csv', mode='a', header=False,index=False)
         print(stock)
     else:
         a['date']=pd.to_datetime(a.date.str[1:],unit='s').dt.tz_localize('UTC').dt.tz_convert('Asia/Kolkata')
