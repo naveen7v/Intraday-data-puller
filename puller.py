@@ -30,11 +30,16 @@ for stock in stocks:
     stockfile.write('Date,Time,Open,High,Low,Close,Volume\n')
     stockfile.close()
 
-def puller(stock, no_of_days, Interval, write_to_file = True):
+def puller(stock, no_of_days, interval, write_to_file = True):
+  
+  # if you want to use this function for plotting or other purposes
+  # just set 'write_to_file to False
+  
     no_of_days = str(no_of_days)
-    Interval = str(Interval)
-    p=requests.get('http://finance.google.com/finance/getprices?q='+stock+'&x=NSE&i='+Interval+'&p='+no_of_days+'d&f=d,c,h,l,o,v').text
-    a=pd.read_csv(StringIO(p),skiprows=range(7),names =['date','Close','High','Low','Open','Volume'])
+    interval = str(Interval)
+    
+    p = requests.get('http://finance.google.com/finance/getprices?q='+stock+'&x=NSE&i='+interval+'&p='+no_of_days+'d&f=d,c,h,l,o,v').text
+    a = pd.read_csv(StringIO(p), skiprows=range(7), names = ['date', 'Close', 'High', 'Low', 'Open', 'Volume'])
     
     if write_to_file:
         a['Date'] = pd.to_datetime(a.date.str[1:],unit='s').dt.tz_localize('UTC').dt.tz_convert('Asia/Kolkata').dt.strftime('%Y%m%d')
